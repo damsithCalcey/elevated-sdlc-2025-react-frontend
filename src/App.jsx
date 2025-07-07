@@ -1,88 +1,31 @@
-import React, { useEffect, useState } from "react";
-import Header from "./components/Header";
-import AddTodo from "./components/AddTodo";
-import Filter from "./components/Filter";
-import TodoList from "./components/TodoList";
-import Actions from "./components/Actions";
+import Sidebar from "./components/Sidebar/Sidebar";
+import Header from "./components/Header/Header";
+import TaskBoard from "./components/TaskBoard/TaskBoard";
+import CreateTaskModal from "./components/Modals/CreateTaskModal";
+import ViewTaskModal from "./components/Modals/ViewTaskModal";
+import EditTaskModal from "./components/Modals/EditTaskModal";
+import ConfirmModal from "./components/Modals/ConfirmModal";
+import ConfirmCompleteModal from "./components/Modals/ConfirmCompleteModal";
+import { TaskProvider } from "./context/TaskContext";
+import "./App.css";
 
-const getStoredTodos = () => {
-  try {
-    const savedTodos = JSON.parse(localStorage.getItem("todos")) || [];
-    const savedNextId = parseInt(localStorage.getItem("nextId")) || 1;
-    return { savedTodos, savedNextId };
-  } catch {
-    return { savedTodos: [], savedNextId: 1 };
-  }
+const App = () => {
+  return (
+    <TaskProvider>
+      <div className="app-container">
+        <Sidebar />
+        <main className="main-content">
+          <Header />
+          <TaskBoard />
+        </main>
+        <CreateTaskModal />
+        <ViewTaskModal />
+        <EditTaskModal />
+        <ConfirmModal />
+        <ConfirmCompleteModal />
+      </div>
+    </TaskProvider>
+  );
 };
 
-export default function App() {
-  const { savedTodos, savedNextId } = getStoredTodos();
-
-  const [todos, setTodos] = useState(savedTodos);
-  const [nextId, setNextId] = useState(savedNextId);
-  const [filter, setFilter] = useState("all");
-
-  useEffect(() => {
-    localStorage.setItem("todos", JSON.stringify(todos));
-    localStorage.setItem("nextId", nextId.toString());
-  }, [todos, nextId]);
-
-  const addTodo = (text) => {
-    const newTodo = {
-      id: nextId,
-      text,
-      completed: false,
-      createdAt: new Date().toISOString(),
-    };
-
-    setTodos([newTodo, ...todos]);
-    setNextId(nextId + 1);
-  };
-
-  const toggleTodo = (id) => {
-    const updatedTodos = todos.map((todo) =>
-      todo.id === id ? { ...todo, completed: !todo.completed } : todo
-    );
-    setTodos(updatedTodos);
-  };
-
-  const deleteTodo = (id) => {
-    const newList = todos.filter((t) => t.id !== id);
-    setTodos(newList);
-  };
-
-  const clearCompleted = () => {
-    const newList = todos.filter((t) => !t.completed);
-    setTodos(newList);
-  };
-
-  const filteredTodos = todos.filter((todo) =>
-    filter === "active"
-      ? !todo.completed
-      : filter === "completed"
-      ? todo.completed
-      : true
-  );
-
-  const activeCount = todos.filter((t) => !t.completed).length;
-
-  return (
-    <div className="container">
-      <Header />
-      <main>
-        <AddTodo onAdd={addTodo} />
-        <Filter filter={filter} setFilter={setFilter} count={activeCount} />
-        <TodoList
-          todos={filteredTodos}
-          onToggle={toggleTodo}
-          onDelete={deleteTodo}
-          filter={filter}
-        />
-        <Actions
-          onClearCompleted={clearCompleted}
-          hasCompleted={todos.some((t) => t.completed)}
-        />
-      </main>
-    </div>
-  );
-}
+export default App;
