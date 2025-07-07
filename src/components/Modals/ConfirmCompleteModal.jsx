@@ -1,7 +1,9 @@
 import { useTasks } from "../../context/TaskContext";
 
 const ConfirmCompleteModal = () => {
-  const { modal, toggleModal, toggleCompleted, currentTaskId } = useTasks();
+  const { modal, tasks, toggleModal, updateTask, currentTaskId } = useTasks();
+  const task = tasks.find((t) => t.id === currentTaskId);
+
   if (modal !== "complete") return null;
 
   return (
@@ -25,11 +27,11 @@ const ConfirmCompleteModal = () => {
           <button
             className="btn-success"
             onClick={() => {
-              toggleCompleted(currentTaskId);
+              updateTask({ ...task, completed: !task.completed });
               toggleModal();
             }}
           >
-            Complete
+            { task.completed ? "Incomplete" : "Complete" }
           </button>
         </div>
       </div>

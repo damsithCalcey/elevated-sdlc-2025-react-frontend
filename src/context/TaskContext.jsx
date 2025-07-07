@@ -6,38 +6,7 @@ const TaskContext = createContext();
 export const useTasks = () => useContext(TaskContext);
 
 export const TaskProvider = ({ children }) => {
-  const [tasks, setTasks] = useState([
-    {
-      id: 1,
-      title: "Grocery shopping for the week.",
-      description: "Complete the project report by summarizing key findings.",
-      dueDate: "2025-07-01",
-      completed: false,
-    },
-    {
-      id: 2,
-      title: "Read two chapters of the new novel.",
-      description: "Schedule a brainstorming session to generate new ideas.",
-      dueDate: "2025-07-02",
-      completed: false,
-    },
-    {
-      id: 3,
-      title: "Finish the report for the marketing team.",
-      description: "Prepare a presentation for the marketing team meeting.",
-      dueDate: "2025-08-01",
-      completed: false,
-    },
-    {
-      id: 4,
-      title: "Call Mom to catch up.",
-      description:
-        "Review the budget proposal and suggest any necessary adjustments.",
-      dueDate: "2025-08-01",
-      completed: false,
-    },
-  ]);
-
+  const [tasks, setTasks] = useState([]);
   const [modal, setModal] = useState(null); // 'create' | 'view' | 'edit' | 'confirm' | 'complete'
   const [currentTaskId, setCurrentTaskId] = useState(null);
   const [showCompleted, setShowCompleted] = useState(false);
@@ -48,29 +17,99 @@ export const TaskProvider = ({ children }) => {
     setCurrentTaskId(taskId);
   };
 
-  const addTask = (task) => {
-    setTasks((prev) => [
-      ...prev,
-      { ...task, id: Date.now(), completed: false },
-    ]);
+  const getTasks = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/v1/todos");
+      const data = await response.json();
+
+      setTasks(data);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+      return;
+    }
   };
 
-  const updateTask = (updatedTask) => {
-    setTasks((prev) =>
-      prev.map((task) => (task.id === updatedTask.id ? updatedTask : task))
-    );
+  const addTask = async (task) => {
+    try {
+      const response = await fetch("http://localhost:5000/api/v1/todos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: task.title,
+          description: task.description,
+          due_date: task.dueDate,
+        }),
+      });
+
+      const data = await response.json();
+
+      setTasks((prev) => [
+        ...prev,
+        {
+          id: data.id,
+          title: data.title,
+          description: data.description,
+          dueDate: data.due_date,
+          completed: data.done,
+        },
+      ]);
+    } catch (error) {
+      console.error("Error adding task:", error);
+      return;
+    }
   };
 
-  const deleteTask = (taskId) => {
-    setTasks((prev) => prev.filter((task) => task.id !== taskId));
+  const updateTask = async (updatedTask) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/v1/todos/${updatedTask.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: updatedTask.title,
+            description: updatedTask.description,
+            due_date: updatedTask.dueDate,
+            done: updatedTask.completed,
+          }),
+        }
+      );
+      const data = await response.json();
+
+      setTasks((prev) =>
+        prev.map((task) =>
+          task.id === updatedTask.id
+            ? {
+                id: data.id,
+                title: data.title,
+                description: data.description,
+                dueDate: data.due_date,
+                completed: data.done,
+              }
+            : task
+        )
+      );
+    } catch (error) {
+      console.error("Error updating task:", error);
+      return;
+    }
   };
 
-  const toggleCompleted = (taskId) => {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === taskId ? { ...task, completed: !task.completed } : task
-      )
-    );
+  const deleteTask = async (taskId) => {
+    try {
+      await fetch(`http://localhost:5000/api/v1/todos/${taskId}`, {
+        method: "DELETE",
+      });
+
+      setTasks((prev) => prev.filter((task) => task.id !== taskId));
+    } catch (error) {
+      console.error("Error deleting task:", error);
+      return;
+    }
   };
 
   return (
@@ -84,10 +123,10 @@ export const TaskProvider = ({ children }) => {
         toggleModal,
         setSearch,
         setShowCompleted,
+        getTasks,
         addTask,
         updateTask,
         deleteTask,
-        toggleCompleted,
       }}
     >
       {children}

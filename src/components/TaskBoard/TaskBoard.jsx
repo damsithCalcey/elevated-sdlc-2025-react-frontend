@@ -1,8 +1,9 @@
+import { useEffect } from "react";
 import { useTasks } from "../../context/TaskContext";
 import Toolbar from "./Toolbar";
 
 const TaskBoard = () => {
-  const { tasks, toggleModal, showCompleted, search } = useTasks();
+  const { tasks, getTasks, toggleModal, showCompleted, search } = useTasks();
 
   const filteredTasks = tasks.filter((task) => {
     const matchSearch =
@@ -24,6 +25,10 @@ const TaskBoard = () => {
     const className = taskDate < today ? "overdue" : "upcoming";
     return { formatted, className };
   };
+
+  useEffect(() => {
+    getTasks();
+  }, []);
 
   return (
     <>
