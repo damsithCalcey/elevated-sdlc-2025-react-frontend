@@ -17,7 +17,7 @@ const TaskBoard = () => {
 
   const getTasks = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/v1/todos");
+      const response = await fetch("http://localhost:5001/api/v1/todos");
       const data = await response.json();
 
       const formattedTask = data.map((task) => formatTask(task));
@@ -31,7 +31,7 @@ const TaskBoard = () => {
   const getCompletedTasks = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/v1/todos?done=true"
+        "http://localhost:5001/api/v1/todos?done=true"
       );
       const data = await response.json();
 
@@ -46,7 +46,7 @@ const TaskBoard = () => {
   const searchTasks = async (searchTerm) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/todos?search=${searchTerm}`
+        `http://localhost:5001/api/v1/todos?search=${searchTerm}`
       );
       const data = await response.json();
 
@@ -60,7 +60,7 @@ const TaskBoard = () => {
 
   const addTask = async (task) => {
     try {
-      const response = await fetch("http://localhost:5000/api/v1/todos", {
+      const response = await fetch("http://localhost:5001/api/v1/todos", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -83,7 +83,7 @@ const TaskBoard = () => {
   const updateTask = async (updatedTask) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/todos/${updatedTask.id}`,
+        `http://localhost:5001/api/v1/todos/${updatedTask.id}`,
         {
           method: "PUT",
           headers: {
@@ -112,7 +112,7 @@ const TaskBoard = () => {
 
   const deleteTask = async (taskId) => {
     try {
-      await fetch(`http://localhost:5000/api/v1/todos/${taskId}`, {
+      await fetch(`http://localhost:5001/api/v1/todos/${taskId}`, {
         method: "DELETE",
       });
 
