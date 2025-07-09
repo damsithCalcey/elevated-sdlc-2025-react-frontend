@@ -1,13 +1,15 @@
-import { useTasks } from "../../context/TaskContext";
+const ConfirmCompleteModal = ({ currentTask, onUpdateTask, onModalClose }) => {
+  const handleCompleteToggle = () => {
+    onUpdateTask({
+      ...currentTask,
+      completed: !currentTask.completed,
+    });
 
-const ConfirmCompleteModal = () => {
-  const { modal, tasks, toggleModal, updateTask, currentTaskId } = useTasks();
-  const task = tasks.find((t) => t.id === currentTaskId);
-
-  if (modal !== "complete") return null;
+    onModalClose();
+  };
 
   return (
-    <div className="modal" onClick={() => toggleModal()}>
+    <div className="modal" onClick={onModalClose}>
       <div
         className="modal-content confirm-modal"
         onClick={(e) => e.stopPropagation()}
@@ -17,21 +19,15 @@ const ConfirmCompleteModal = () => {
         </div>
         <h2>Are you sure that you want to complete this task?</h2>
         <p>
-          Are you sure you want to mark this task as completed? You cannot undo
-          this action.
+          Are you sure you want to mark this task as completed? You can undo
+          this action later.
         </p>
         <div className="form-actions">
-          <button className="btn-cancel" onClick={() => toggleModal()}>
+          <button className="btn-cancel" onClick={onModalClose}>
             Cancel
           </button>
-          <button
-            className="btn-success"
-            onClick={() => {
-              updateTask({ ...task, completed: !task.completed });
-              toggleModal();
-            }}
-          >
-            { task.completed ? "Incomplete" : "Complete" }
+          <button className="btn-success" onClick={handleCompleteToggle}>
+            {currentTask.completed ? "Incomplete" : "Complete"}
           </button>
         </div>
       </div>

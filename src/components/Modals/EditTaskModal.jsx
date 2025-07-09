@@ -1,38 +1,35 @@
 import { useState, useEffect } from "react";
-import { useTasks } from "../../context/TaskContext";
 
-const EditTaskModal = () => {
-  const { modal, toggleModal, tasks, currentTaskId, updateTask } = useTasks();
-  const task = tasks.find((t) => t.id === currentTaskId);
-
+const EditTaskModal = ({
+  currentTask,
+  onModalClose,
+  onDeleteConfirmModalOpen,
+  onUpdateTask,
+}) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
 
-  useEffect(() => {
-    if (task && modal === "edit") {
-      setTitle(task.title);
-      setDescription(task.description);
-      setDueDate(task.dueDate);
-    }
-  }, [task, modal]);
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    updateTask({ ...task, title, description, dueDate });
-    toggleModal();
+    onUpdateTask({ ...currentTask, title, description, dueDate });
+    onModalClose();
   };
 
-  if (!task || modal !== "edit") return null;
+  useEffect(() => {
+    setTitle(currentTask.title);
+    setDescription(currentTask.description);
+    setDueDate(currentTask.dueDate);
+  }, [currentTask]);
 
   return (
-    <div className="modal" onClick={() => toggleModal()}>
+    <div className="modal" onClick={onModalClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>Edit Task</h2>
           <button
             className="delete-task-btn"
-            onClick={() => toggleModal("confirm", task.id)}
+            onClick={onDeleteConfirmModalOpen}
           >
             <i className="fas fa-trash"></i> Delete Task
           </button>
@@ -67,11 +64,7 @@ const EditTaskModal = () => {
             </div>
           </div>
           <div className="form-actions">
-            <button
-              type="button"
-              className="btn-cancel"
-              onClick={() => toggleModal()}
-            >
+            <button type="button" className="btn-cancel" onClick={onModalClose}>
               Cancel
             </button>
             <button type="submit" className="btn-primary">

@@ -1,11 +1,6 @@
-import { useTasks } from "../../context/TaskContext";
-
-const ConfirmModal = () => {
-  const { modal, toggleModal, deleteTask, currentTaskId } = useTasks();
-  if (modal !== "confirm") return null;
-
+const DeleteConfirmModal = ({ currentTaskId, onDeleteTask, onModalClose }) => {
   return (
-    <div className="modal" onClick={() => toggleModal()}>
+    <div className="modal" onClick={onModalClose}>
       <div
         className="modal-content confirm-modal"
         onClick={(e) => e.stopPropagation()}
@@ -19,14 +14,14 @@ const ConfirmModal = () => {
           continue?
         </p>
         <div className="form-actions">
-          <button className="btn-cancel" onClick={() => toggleModal()}>
+          <button className="btn-cancel" onClick={onModalClose}>
             Cancel
           </button>
           <button
             className="btn-danger"
             onClick={() => {
-              deleteTask(currentTaskId);
-              toggleModal();
+              onDeleteTask(currentTaskId);
+              onModalClose();
             }}
           >
             Delete
@@ -37,4 +32,4 @@ const ConfirmModal = () => {
   );
 };
 
-export default ConfirmModal;
+export default DeleteConfirmModal;

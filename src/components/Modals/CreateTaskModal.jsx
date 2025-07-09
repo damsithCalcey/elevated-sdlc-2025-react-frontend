@@ -1,29 +1,23 @@
 import { useState } from "react";
-import { useTasks } from "../../context/TaskContext";
 
-const CreateTaskModal = () => {
-  const { modal, toggleModal, addTask } = useTasks();
+const CreateTaskModal = ({ onAddTask, onModalClose }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    addTask({ title, description, dueDate });
-    toggleModal();
-    setTitle("");
-    setDescription("");
-    setDueDate("");
+
+    onAddTask({ title, description, dueDate });
+    onModalClose();
   };
 
-  if (modal !== "create") return null;
-
   return (
-    <div className="modal" onClick={() => toggleModal()}>
+    <div className="modal" onClick={onModalClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>Create a New Task</h2>
-          <span className="close" onClick={() => toggleModal()}>
+          <span className="close" onClick={onModalClose}>
             &times;
           </span>
         </div>
@@ -57,11 +51,7 @@ const CreateTaskModal = () => {
             </div>
           </div>
           <div className="form-actions">
-            <button
-              type="button"
-              className="btn-cancel"
-              onClick={() => toggleModal()}
-            >
+            <button type="button" className="btn-cancel" onClick={onModalClose}>
               Cancel
             </button>
             <button type="submit" className="btn-primary">

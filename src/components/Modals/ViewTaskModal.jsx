@@ -1,47 +1,43 @@
-import { useTasks } from "../../context/TaskContext";
-
-const ViewTaskModal = () => {
-  const { modal, toggleModal, tasks, currentTaskId } = useTasks();
-  const task = tasks.find((t) => t.id === currentTaskId);
-  if (!task || modal !== "view") return null;
-
+const ViewTaskModal = ({
+  currentTask,
+  onModalClose,
+  onEditModalOpen,
+  onCompleteModalOpen,
+}) => {
   return (
-    <div className="modal" onClick={() => toggleModal()}>
+    <div className="modal" onClick={onModalClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>View Task</h2>
-          <button
-            className="edit-task-btn"
-            onClick={() => toggleModal("edit", task.id)}
-          >
+          <button className="edit-task-btn" onClick={onEditModalOpen}>
             <i className="fas fa-edit"></i> Edit Task
           </button>
         </div>
         <div className="modal-body">
           <div className="field-group">
             <label>Title</label>
-            <div className="field-value">{task.title}</div>
+            <div className="field-value">{currentTask.title}</div>
           </div>
           <div className="field-group">
             <label>Description</label>
             <div className="field-value">
-              {task.description || "No description"}
+              {currentTask.description || "No description"}
             </div>
           </div>
           <div className="field-group">
             <label>Due Date</label>
-            <div className="field-value">{task.dueDate}</div>
+            <div className="field-value">{currentTask.dueDate}</div>
           </div>
         </div>
         <div className="form-actions">
-          <button className="btn-cancel" onClick={() => toggleModal()}>
+          <button className="btn-cancel" onClick={onModalClose}>
             Cancel
           </button>
           <button
-            className={`btn-${task.completed ? "cancel" : "success"}`}
-            onClick={() => toggleModal("complete", task.id)}
+            className={`btn-${currentTask.completed ? "cancel" : "success"}`}
+            onClick={onCompleteModalOpen}
           >
-            {task.completed ? "Mark Incomplete" : "Mark Completed"}
+            {currentTask.completed ? "Mark Incomplete" : "Mark Completed"}
           </button>
         </div>
       </div>

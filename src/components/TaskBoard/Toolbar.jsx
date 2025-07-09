@@ -1,21 +1,19 @@
-import { useTasks } from "../../context/TaskContext";
+import { useState } from 'react';
 
-const Toolbar = () => {
-  const {
-    showCompleted,
-    setCompletedTasks,
-    searchTasks,
-    search,
-    setSearch,
-    toggleModal,
-  } = useTasks();
+const Toolbar = ({
+  showCompletedTasks,
+  setShowCompletedTasks,
+  onSearchTasks,
+  onModalOpen,
+}) => {
+  const [search, setSearch] = useState("");
 
   return (
     <div className="content-toolbar">
       <div className="view-options">
         <button
-          className={`view-btn ${showCompleted ? "active" : ""}`}
-          onClick={() => setCompletedTasks(!showCompleted)}
+          className={`view-btn ${showCompletedTasks ? "active" : ""}`}
+          onClick={() => setShowCompletedTasks(!showCompletedTasks)}
         >
           <i className="fas fa-check"></i> Show Completed
         </button>
@@ -31,15 +29,12 @@ const Toolbar = () => {
           />
           <button
             className="search-task-btn btn-cancel"
-            onClick={() => searchTasks(search)}
+            onClick={() => onSearchTasks(search)}
           >
             Search
           </button>
         </div>
-        <button
-          className="create-task-btn btn-primary"
-          onClick={() => toggleModal("create")}
-        >
+        <button className="create-task-btn btn-primary" onClick={onModalOpen}>
           Create Task
         </button>
       </div>
