@@ -17,16 +17,67 @@ export const TaskProvider = ({ children }) => {
     setCurrentTaskId(taskId);
   };
 
+  const formatData = (data) => {
+    return {
+      id: data.id,
+      title: data.title,
+      description: data.description,
+      dueDate: data.due_date,
+      completed: data.done,
+    };
+  };
+
   const getTasks = async () => {
     try {
       const response = await fetch("http://localhost:5000/api/v1/todos");
       const data = await response.json();
 
-      setTasks(data);
+      const formattedData = data.map((task) => formatData(task));
+      setTasks(formattedData);
     } catch (error) {
       console.error("Error fetching tasks:", error);
       return;
     }
+  };
+
+  const searchTasks = async (searchTerm) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/v1/todos?search=${searchTerm}`
+      );
+      const data = await response.json();
+
+      const formattedData = data.map((task) => formatData(task));
+      setTasks(formattedData);
+    } catch (error) {
+      console.error("Error searching tasks:", error);
+      return;
+    }
+  };
+
+  const getCompletedTasks = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/v1/todos?done=true"
+      );
+      const data = await response.json();
+
+      const formattedData = data.map((task) => formatData(task));
+      setTasks(formattedData);
+    } catch (error) {
+      console.error("Error fetching completed tasks:", error);
+      return;
+    }
+  };
+
+  const setCompletedTasks = (status) => {
+    if (status) {
+      getCompletedTasks();
+    } else {
+      getTasks();
+    }
+
+    setShowCompleted(status);
   };
 
   const addTask = async (task) => {
@@ -45,16 +96,7 @@ export const TaskProvider = ({ children }) => {
 
       const data = await response.json();
 
-      setTasks((prev) => [
-        ...prev,
-        {
-          id: data.id,
-          title: data.title,
-          description: data.description,
-          dueDate: data.due_date,
-          completed: data.done,
-        },
-      ]);
+      setTasks((prev) => [...prev, formatData(data)]);
     } catch (error) {
       console.error("Error adding task:", error);
       return;
@@ -82,15 +124,7 @@ export const TaskProvider = ({ children }) => {
 
       setTasks((prev) =>
         prev.map((task) =>
-          task.id === updatedTask.id
-            ? {
-                id: data.id,
-                title: data.title,
-                description: data.description,
-                dueDate: data.due_date,
-                completed: data.done,
-              }
-            : task
+          task.id === updatedTask.id ? formatData(data) : task
         )
       );
     } catch (error) {
@@ -124,6 +158,9 @@ export const TaskProvider = ({ children }) => {
         setSearch,
         setShowCompleted,
         getTasks,
+        searchTasks,
+        getCompletedTasks,
+        setCompletedTasks,
         addTask,
         updateTask,
         deleteTask,

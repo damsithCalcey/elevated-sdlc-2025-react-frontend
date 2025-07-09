@@ -1,14 +1,21 @@
 import { useTasks } from "../../context/TaskContext";
 
 const Toolbar = () => {
-  const { showCompleted, setShowCompleted, search, setSearch, toggleModal } = useTasks();
+  const {
+    showCompleted,
+    setCompletedTasks,
+    searchTasks,
+    search,
+    setSearch,
+    toggleModal,
+  } = useTasks();
 
   return (
     <div className="content-toolbar">
       <div className="view-options">
         <button
           className={`view-btn ${showCompleted ? "active" : ""}`}
-          onClick={() => setShowCompleted(!showCompleted)}
+          onClick={() => setCompletedTasks(!showCompleted)}
         >
           <i className="fas fa-check"></i> Show Completed
         </button>
@@ -22,6 +29,12 @@ const Toolbar = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
+          <button
+            className="search-task-btn btn-cancel"
+            onClick={() => searchTasks(search)}
+          >
+            Search
+          </button>
         </div>
         <button
           className="create-task-btn btn-primary"

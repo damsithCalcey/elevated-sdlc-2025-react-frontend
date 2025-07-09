@@ -229,6 +229,10 @@ body {
     gap: 16px;
 }
 
+.search-task-btn {
+    margin-left: 8px;
+}
+
 .search-box {
     position: relative;
     display: flex;
